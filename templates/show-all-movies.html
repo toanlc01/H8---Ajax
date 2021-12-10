@@ -38,6 +38,7 @@
             <td>{{ movie[3] }}</td>
             <td>
                 <form action="{{ url_for('rateOneMovie') }}" method="POST">
+                <!-- <form name="myForm"></form> -->
                       <input type="radio" id="rating" name="rating" value="{'rating': 1, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
                       <label for="1">1</label>
                       <input type="radio" id="rating" name="rating" value="{'rating': 2, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
@@ -48,14 +49,21 @@
                       <label for="4">4</label>
                       <input type="radio" id="rating" name="rating" value="{'rating': 5, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
                       <label for="5">5</label>
-                      <button>rate this</button>
+                      <button id="rate">rate this</button>
                   </form>
             </td>
-            <td>{{ movie[5] }}</td>
+            <td id="averageRating"><span id="down_votes">{{ movie[5] }}</span></td>
         </tr>
     {% endfor %}
         
   </table>
+
+{% endblock %}
+
+{% block end_crypts %}
+
+
+
 
 {% endblock %}
 

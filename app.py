@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, flash, redirect, session
+from flask import Flask, render_template, url_for, request, flash, redirect, session, jsonify
 import cs304dbi as dbi
 import random, bcrypt, json
 
@@ -61,6 +61,38 @@ def rateOneMovie():
     flash(f"User {uid} is rating the movie tt {tt} as {rating} stars. New average is {newRating}")
     return redirect(url_for('showAllMovies', uid=uid))
 
+@app.route('/rate-one-movie-ajax/', methods=['POST'])
+def rateMovieAjax():
+    data = request.form['rating']
+    data = data.replace("\'", "\"")
+    data = json.loads(data)
+
+    rating = data['rating']
+    uid = data['uid']
+    tt = data['tt']
+
+    curs.execute('''
+                INSERT INTO individualRating (tt, uid, rating) 
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY
+                    UPDATE tt = VALUES(tt), uid = VALUES(uid), rating = VALUES(rating);
+                ''', [tt, uid, rating])
+    conn.commit()
+
+    curs.execute('SELECT AVG(rating) FROM individualRating WHERE tt = %s', [tt])
+    newRating = curs.fetchone()[0]
+
+    curs.execute('''
+                UPDATE movie 
+                SET avgRating = %s
+                WHERE tt = %s;
+                ''', [newRating, tt])
+    conn.commit()
+
+    resp_dic = {'newRating': newRating}
+
+    return jsonify(resp_dic)
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8001)
+    app.run(debug=True, port=8002)
