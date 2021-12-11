@@ -37,8 +37,8 @@
             <td>{{ movie[2] }}</td>
             <td>{{ movie[3] }}</td>
             <td>
-                <form action="{{ url_for('rateOneMovie') }}" method="POST">
-                <!-- <form name="myForm"></form> -->
+                <!-- <form action="{{ url_for('rateOneMovie') }}" method="POST"> -->
+                <form name="myForm"></form>
                       <input type="radio" id="rating" name="rating" value="{'rating': 1, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
                       <label for="1">1</label>
                       <input type="radio" id="rating" name="rating" value="{'rating': 2, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
@@ -49,10 +49,10 @@
                       <label for="4">4</label>
                       <input type="radio" id="rating" name="rating" value="{'rating': 5, 'uid': {{ uid }}, 'tt': {{ movie[0] }} }">
                       <label for="5">5</label>
-                      <button id="rate">rate this</button>
+                      <button class="rate">rate this</button>
                   </form>
             </td>
-            <td id="averageRating"><span id="down_votes">{{ movie[5] }}</span></td>
+            <td id="averageRating"><span id="{{movie[0]}}">{{ movie[5] }}</span></td>
         </tr>
     {% endfor %}
         
@@ -62,7 +62,25 @@
 
 {% block end_crypts %}
 
+<script src="//code.jquery.com/jquery-3.4.1.min.js"></script>
 
+<script>
+    var update_one_movie_rating = "{{url_for('rateMovieAjax')}}";
+    var tt;
+
+    function update_avg_rating(resp) {
+        console.log('new avg rating is', resp);
+        document.getElementById(tt).innerHTML = resp.avgRating;
+        
+    }
+
+    $(".rate").on('click', function() {
+        let value = document.querySelector('input[name="rating"]:checked').value;
+        data = JSON.parse(value.replace(/'/g,"\""));
+        tt = data.tt;
+        $.post(update_one_movie_rating, {data: value}, update_avg_rating);
+    })
+</script>
 
 
 {% endblock %}

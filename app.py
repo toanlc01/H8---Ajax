@@ -63,9 +63,10 @@ def rateOneMovie():
 
 @app.route('/rate-one-movie-ajax/', methods=['POST'])
 def rateMovieAjax():
-    data = request.form['rating']
+    data = request.form['data']
     data = data.replace("\'", "\"")
     data = json.loads(data)
+    
 
     rating = data['rating']
     uid = data['uid']
@@ -89,9 +90,9 @@ def rateMovieAjax():
                 ''', [newRating, tt])
     conn.commit()
 
-    resp_dic = {'newRating': newRating}
+    response = {'avgRating': newRating}
 
-    return jsonify(resp_dic)
+    return jsonify(response)
 
 
 if __name__ == '__main__':
